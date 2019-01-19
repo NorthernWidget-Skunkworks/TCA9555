@@ -24,7 +24,7 @@ int TCA9555::PinMode(int Pin, boolean PinType)
     return -1;  //Fail if pin out of range
   }
 
-  if(PinType == INPUT)
+  if(PinType == 1)  //Set as INPUT
   {
     PinModeConf = PinModeConf | (0x01 << Pin);
     // Serial.print("Reg 0x03 = ");  //DEBUG!
@@ -32,10 +32,12 @@ int TCA9555::PinMode(int Pin, boolean PinType)
     SetDirection(PinModeConf);
     return 1;
   }
-  else if(PinType == OUTPUT)
+  else if(PinType == 0)  //Set as OUTPUT
   {
     PinModeConf = PinModeConf & ~(0x01 << Pin);
     // Serial.print("Reg 0x03 = ");  //DEBUG!
+    // Serial.println(Pin); //DEBUG!
+    // Serial.println(~(0x01 << Pin)); //DEBUG!
     // Serial.println(PinModeConf, HEX); //DEBUG!
     SetDirection(PinModeConf);
     return 0;
@@ -46,6 +48,7 @@ int TCA9555::PinMode(int Pin, boolean PinType)
 
 int TCA9555::DigitalWrite(int Pin, boolean State)
 {
+  // Serial.println("BANG!2");
   if(Pin > 16 || Pin < 0 || GetDirection(Pin) != 0)  
   {
     return -1; //Fail if pin out of range, or pin configured as input
@@ -56,7 +59,7 @@ int TCA9555::DigitalWrite(int Pin, boolean State)
     Port = Port | (0x01 << Pin);
     // Serial.print("Reg 0x01 = ");  //DEBUG!
     // Serial.println(Port, HEX); //DEBUG!
-    SetPort(Port);
+    // Serial.println(SetPort(Port)); //DEBUG!
     return 1;
   }
   else if(State == LOW)
@@ -64,7 +67,7 @@ int TCA9555::DigitalWrite(int Pin, boolean State)
     Port = Port & ~(0x01 << Pin);
     // Serial.print("Reg 0x01 = ");  //DEBUG!
     // Serial.println(Port, HEX); //DEBUG!
-    SetPort(Port);
+    // Serial.println(SetPort(Port)); //DEBUG!
     return 0;
   }
   else 
@@ -73,10 +76,11 @@ int TCA9555::DigitalWrite(int Pin, boolean State)
 
 bool TCA9555::DigitalRead(int Pin) 
 {
-  if(Pin > 16 || Pin < 0 || GetDirection(Pin) != 1)  
-  {
-    return -1; //Fail if pin out of range, or pin configured as output
-  }
+  //DEBUG!
+  // if(Pin > 16 || Pin < 0 || GetDirection(Pin) != 1)  
+  // {
+  //   return -1; //Fail if pin out of range, or pin configured as output
+  // }
 
   return (ReadWord(READ_REG) >> Pin) & 0x01; //Return specific pin state from word of pin values
 }
@@ -95,7 +99,7 @@ int TCA9555::SetPolarity(uint16_t Config) {
 
 bool TCA9555::GetDirection(uint8_t Pin) {  //Returns polairty of given pin
   uint16_t Polarity = 0; //Value to store polarity registers
-
+  // Serial.println("BANG!0"); //DEBUG!
   Wire.beginTransmission(ADR);
   Wire.write(POLARITY_REG); 
   Wire.endTransmission();
@@ -103,7 +107,7 @@ bool TCA9555::GetDirection(uint8_t Pin) {  //Returns polairty of given pin
   Wire.requestFrom(ADR, 2);
   Polarity = Wire.read(); //Read in low byte
   Polarity = Polarity + Wire.read() << 8; //Read in upper byte
-
+  // Serial.println("BANG!1"); //DEBUG!
   return (Polarity >> Pin) & 1; //Return value of Pin index
 }
 
