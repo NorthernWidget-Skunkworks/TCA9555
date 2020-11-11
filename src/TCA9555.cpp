@@ -1,16 +1,28 @@
-#include <Arduino.h>
+// #include <Arduino.h>
+#include <Particle.h>
 #include <TCA9555.h>
-#include <Wire.h>
+// #include <Wire.h>
 
 TCA9555::TCA9555(int _ADR)
 {
   ADR = _ADR; 
-  Wire.begin();  
+  // Wire.begin();  
+}
+TCA9555::TCA9555()
+{
+  // ADR = _ADR; 
+  // Wire.begin();  
 }
 
 
-int TCA9555::Begin(void)
+int TCA9555::Begin(void) //FIX! Set to use default if not specified by instantiation 
 {
+  return Begin(ADR); //If address not specificed at this stage, use one existing one
+}
+
+int TCA9555::Begin(int _ADR)
+{
+  if(_ADR) ADR = _ADR; //If _ADR is not null, set value
   Wire.beginTransmission(ADR); //Test if device present 
   if(Wire.endTransmission() != 0) return -1;
   else return 1;
@@ -60,6 +72,7 @@ int TCA9555::DigitalWrite(int Pin, boolean State)
     // Serial.print("Reg 0x01 = ");  //DEBUG!
     // Serial.println(Port, HEX); //DEBUG!
     // Serial.println(SetPort(Port)); //DEBUG!
+    SetPort(Port); 
     return 1;
   }
   else if(State == LOW)
@@ -68,6 +81,7 @@ int TCA9555::DigitalWrite(int Pin, boolean State)
     // Serial.print("Reg 0x01 = ");  //DEBUG!
     // Serial.println(Port, HEX); //DEBUG!
     // Serial.println(SetPort(Port)); //DEBUG!
+    SetPort(Port); 
     return 0;
   }
   else 

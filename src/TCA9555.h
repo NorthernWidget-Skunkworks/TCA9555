@@ -19,7 +19,9 @@ class TCA9555
 
   public:
     TCA9555(int _ADR);
-    int Begin(void);
+    TCA9555(); 
+    int Begin(int _ADR); 
+    int Begin(void); 
     int PinMode(int Pin, boolean PinType);
     int DigitalWrite(int Pin, boolean State);
     bool DigitalRead(int Pin);
